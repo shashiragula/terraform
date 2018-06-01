@@ -5,7 +5,7 @@ provider "aws" {
 #Deploy Storage Resources
 module "storage" {
     source = "./storage"
-    project_name = "$var.project_name"
+    project_name = "${var.project_name}"
 }
 
 # Deploy Networking Resources

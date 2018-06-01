@@ -21,7 +21,7 @@ resource "aws_key_pair" "tf_auth" {
 
 data "template_file" "user-init" {
     count = 2
-    template = "${file("${path.module/userdata.tpl}")}"
+    template = "${file("${path.module}/userdata.tpl")}"
     
     vars {
         firewall_subnets = "${element(var.subnet_ips, count.index)}"
