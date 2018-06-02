@@ -3,15 +3,26 @@
 data "aws_ami" "server_ami" {
     most_recent = true
     
-    filter {
-        name = "owner-alias"
-        values = ["amazon"]
-    }
+#    filter {
+#        name = "owner-alias"
+#        values = ["amazon"]
+#    }
     
+#    filter {
+#        name = "name"
+#        values = ["amzn-ami-hvm*-x86_64-gp2"]
+#    }
+
+    filter {
+        name = "owner-id"
+        values = ["450831423837"]
+    }
+
     filter {
         name = "name"
-        values = ["amzn-ami-hvm*-x86_64-gp2"]
+        values = ["packer-ubuntu*"]
     }
+    
 }
 
 resource "aws_key_pair" "tf_auth" {
