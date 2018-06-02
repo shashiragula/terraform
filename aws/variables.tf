@@ -1,3 +1,5 @@
+# ----- global variables
+
 variable "aws_region" {}
 
 # ----- storage variables
@@ -11,13 +13,9 @@ variable "public_cidrs" {
     type = "list"
 }
 
-##
-
 variable "private_cidrs" {
     type = "list"
 }
-
-##
 
 variable "accessip" {}
 

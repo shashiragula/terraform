@@ -2,6 +2,7 @@
 
 data "aws_availability_zones" "available" {}
 
+# VPC
 resource "aws_vpc" "tf_vpc" {
     cidr_block = "${var.vpc_cidr}"
     enable_dns_hostnames = true
@@ -12,6 +13,7 @@ resource "aws_vpc" "tf_vpc" {
     }
 }
 
+# IGW
 resource "aws_internet_gateway" "tf_internet_gateway" {
     vpc_id = "${aws_vpc.tf_vpc.id}"
     
@@ -21,6 +23,7 @@ resource "aws_internet_gateway" "tf_internet_gateway" {
 }
 
 
+# PUBLIC RT
 resource "aws_route_table" "tf_public_rt" {
     vpc_id = "${aws_vpc.tf_vpc.id}"
     
@@ -34,6 +37,7 @@ resource "aws_route_table" "tf_public_rt" {
     }
 }
 
+# PRIVATE RT
 resource "aws_default_route_table" "tf_private_rt" {
     default_route_table_id = "${aws_vpc.tf_vpc.default_route_table_id}"
     
@@ -42,6 +46,7 @@ resource "aws_default_route_table" "tf_private_rt" {
     }
 }
 
+# PUBLIC SUBNET
 resource "aws_subnet" "tf_public_subnet" {
     count = 2
     vpc_id = "${aws_vpc.tf_vpc.id}"
@@ -54,7 +59,7 @@ resource "aws_subnet" "tf_public_subnet" {
     }
 }
 
-####
+# PRIVATE SUBNET
 resource "aws_subnet" "tf_private_subnet" {
     count = 2
     vpc_id = "${aws_vpc.tf_vpc.id}"
@@ -67,6 +72,7 @@ resource "aws_subnet" "tf_private_subnet" {
     }
 }
 
+# PRIVATE RT & SG ASSOCIATION
 resource "aws_route_table_association" "tf_private_assoc" {
     count = "${aws_subnet.tf_private_subnet.count}"
     subnet_id = "${aws_subnet.tf_private_subnet.*.id[count.index]}"
@@ -90,8 +96,7 @@ resource "aws_security_group" "tf_private_sg" {
 }
 
 
-####
-
+# PUBLIC RT & SG ASSOCIATION
 resource "aws_route_table_association" "tf_public_assoc" {
     count = "${aws_subnet.tf_public_subnet.count}"
     subnet_id = "${aws_subnet.tf_public_subnet.*.id[count.index]}"
@@ -127,13 +132,12 @@ resource "aws_security_group" "tf_public_sg" {
     }
 }
 
-####
-
+#PUBLIC NACL
 resource "aws_network_acl" "tf_public_nacl" {
   vpc_id = "${aws_vpc.tf_vpc.id}"
   subnet_ids = ["${aws_subnet.tf_public_subnet.*.id}"]
   
-
+  # HTTP
   ingress {
     protocol   = "tcp"
     rule_no    = 100
@@ -143,6 +147,7 @@ resource "aws_network_acl" "tf_public_nacl" {
     to_port    = 80
   }
 
+  # HTTPS
   ingress {
     protocol   = "tcp"
     rule_no    = 110
@@ -152,6 +157,7 @@ resource "aws_network_acl" "tf_public_nacl" {
     to_port    = 443
   }
   
+  # SSH
   ingress {
     protocol   = "tcp"
     rule_no    = 120
@@ -161,6 +167,7 @@ resource "aws_network_acl" "tf_public_nacl" {
     to_port    = 22
   }
   
+    #HTTP
     egress {
     protocol   = "tcp"
     rule_no    = 100
@@ -170,6 +177,7 @@ resource "aws_network_acl" "tf_public_nacl" {
     to_port    = 80
   }
 
+  # HTTPS
   egress {
     protocol   = "tcp"
     rule_no    = 110
@@ -184,10 +192,12 @@ resource "aws_network_acl" "tf_public_nacl" {
   }
 }
 
+# PRIVATE NACL
 resource "aws_network_acl" "tf_private_nacl" {
   vpc_id = "${aws_vpc.tf_vpc.id}"
   subnet_ids = ["${aws_subnet.tf_private_subnet.*.id}"]
-  
+
+  # SSH  
   ingress {
     protocol   = "tcp"
     rule_no    = 120
@@ -196,8 +206,9 @@ resource "aws_network_acl" "tf_private_nacl" {
     from_port  = 22
     to_port    = 22
   }
-  
-    egress {
+
+  # HTTP
+  egress {
     protocol   = "tcp"
     rule_no    = 100
     action     = "allow"
@@ -206,6 +217,7 @@ resource "aws_network_acl" "tf_private_nacl" {
     to_port    = 80
   }
 
+  # HTTPS
   egress {
     protocol   = "tcp"
     rule_no    = 110
@@ -219,4 +231,3 @@ resource "aws_network_acl" "tf_private_nacl" {
     Name = "tf_private_nacl"
   }
 }
-####

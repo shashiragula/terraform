@@ -2,7 +2,8 @@
 
 data "aws_ami" "server_ami" {
     most_recent = true
-    
+
+#   filter for pulling generic amazon ami    
 #    filter {
 #        name = "owner-alias"
 #        values = ["amazon"]
@@ -13,6 +14,7 @@ data "aws_ami" "server_ami" {
 #        values = ["amzn-ami-hvm*-x86_64-gp2"]
 #    }
 
+# filter for pulling custom created ami
     filter {
         name = "owner-id"
         values = ["450831423837"]
@@ -25,11 +27,13 @@ data "aws_ami" "server_ami" {
     
 }
 
+#create key-pair and specify the pub key path
 resource "aws_key_pair" "tf_auth" {
     key_name = "${var.key_name}"
     public_key = "${file(var.public_key_path)}"
 }
 
+# create template files to install httpd and show some sample data
 data "template_file" "user-init" {
     count = 2
     template = "${file("${path.module}/userdata.tpl")}"
@@ -39,6 +43,7 @@ data "template_file" "user-init" {
     }
 }
 
+#Create multiple instances based on the custom ami
 resource "aws_instance" "tf_server" {
     count = "${var.instance_count}"
     instance_type = "${var.instance_type}"
