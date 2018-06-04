@@ -72,6 +72,18 @@ resource "aws_subnet" "tf_private_subnet" {
     }
 }
 
+resource "aws_db_subnet_group" "tf_db_subnet_group" {
+  name       = "tf_db_subnet_group"
+  subnet_ids = ["${aws_subnet.tf_private_subnet.*.id[0]}",
+                "${aws_subnet.tf_private_subnet.*.id[1]}"
+  ]
+
+  tags {
+    Name = "tf_db_subnet_group"
+  }
+}
+
+
 # PRIVATE RT & SG ASSOCIATION
 resource "aws_route_table_association" "tf_private_assoc" {
     count = "${aws_subnet.tf_private_subnet.count}"
@@ -113,7 +125,7 @@ resource "aws_security_group" "tf_public_sg" {
         from_port = 22
         to_port   = 22
         protocol = "tcp"
-        cidr_blocks = ["${var.vpc_cidr}"]
+        cidr_blocks = ["${var.accessip}"]
     }
     
     # HTTP

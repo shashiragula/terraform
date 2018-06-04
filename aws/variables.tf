@@ -31,4 +31,11 @@ variable "instance_count" {
     default = 1
 }
 
+# -------- database variables
+
+variable "db_username" {}
+
+variable "db_password" {}
+
+#variable "db_subnet_group_name" {}
 

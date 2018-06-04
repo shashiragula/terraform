@@ -30,3 +30,12 @@ module "compute" {
     security_group = "${module.networking.public_sg}"
     subnet_ips = "${module.networking.subnet_ips}"
 }
+
+# Deploy database Resources
+
+module "database" {
+    source = "./database"
+    db_username = "${var.db_username}"
+    db_password = "${var.db_password}"
+    db_subnet_group_name = "${module.networking.db_subnet_group_name}"
+}

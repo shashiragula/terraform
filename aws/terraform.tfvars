@@ -15,3 +15,5 @@ key_name = "tf_key"
 public_key_path = "/home/ec2-user/.ssh/id_rsa.pub"
 server_instance_type = "t2.micro"
 instance_count = 2
+db_username = "admin"
+db_password = "admin_123"
